@@ -203,22 +203,22 @@ public class MovieAnalyzer {
       String line;
       while ((line = reader.readLine()) != null) {
         String[] item = line.split(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)", -1);
-         title.add(item[1].replace("\"", ""));
-         years.add(Integer.parseInt(item[2]));
-         certification.add(item[3]);
-         runtime.add(Integer.parseInt(item[4].replace(" min", "").replace("\"", "")));
-         Collections.addAll(genre, item[5]);
-         rating.add(Float.parseFloat(item[6]));
-         overview.add(item[7].charAt(0)=='\"'?item[7].length()-2:item[7].length());
-         score.add(item[8].equals("") ? 0 : Integer.parseInt(item[8]));
+        title.add(item[1].replace("\"", ""));
+        years.add(Integer.parseInt(item[2]));
+        certification.add(item[3]);
+        runtime.add(Integer.parseInt(item[4].replace(" min", "").replace("\"", "")));
+        Collections.addAll(genre, item[5]);
+        rating.add(Float.parseFloat(item[6]));
+        overview.add(item[7].charAt(0) == '\"' ? item[7].length() - 2 : item[7].length());
+        score.add(item[8].equals("") ? 0 : Integer.parseInt(item[8]));
          director.add(item[9]);
          star1.add(item[10]);
-        star2.add(item[11]);
-        star3.add(item[12]);
-        star4.add(item[13]);
-        vote.add(Integer.parseInt(item[14]));
-        gross.add(item[15].equals("") ? 0 : Integer.parseInt(item[15]
-            .replaceAll("\\,|\\\"", "")));
+         star2.add(item[11]);
+         star3.add(item[12]);
+         star4.add(item[13]);
+         vote.add(Integer.parseInt(item[14]));
+         gross.add(item[15].equals("") ? 0 : Integer.parseInt(item[15]
+             .replaceAll("\\,|\\\"", "")));
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
