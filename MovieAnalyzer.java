@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class MovieAnalyzer {
 
@@ -75,7 +76,71 @@ public class MovieAnalyzer {
   }
 
   public List<String> getTopStars(int top_k, String by) {
-    return null;
+    List<String> stars1 = this.getStar1();
+    List<String> stars2 = this.getStar2();
+    List<String> stars3 = this.getStar3();
+    List<String> stars4 = this.getStar4();
+    List<Float> rating = this.getRating();
+    List<Integer> grosss = this.getGross();
+    Map<String, Integer> nums = new HashMap<>();
+    if (by.equals("rating")) {
+      Map<String, Float> ratings = new HashMap<>();
+      for (int i = 0; i < star1.size(); i++) {
+        ratings.put(stars1.get(i), ratings.getOrDefault(stars1.get(i), 0f) + rating.get(i));
+        ratings.put(stars2.get(i), ratings.getOrDefault(stars2.get(i), 0f) + rating.get(i));
+        ratings.put(stars3.get(i), ratings.getOrDefault(stars3.get(i), 0f) + rating.get(i));
+        ratings.put(stars4.get(i), ratings.getOrDefault(stars4.get(i), 0f) + rating.get(i));
+        nums.put(stars1.get(i), nums.getOrDefault(stars1.get(i), 0) + 1);
+        nums.put(stars2.get(i), nums.getOrDefault(stars2.get(i), 0) + 1);
+        nums.put(stars3.get(i), nums.getOrDefault(stars3.get(i), 0) + 1);
+        nums.put(stars4.get(i), nums.getOrDefault(stars4.get(i), 0) + 1);
+      }
+      Map<String, Float> rs = new HashMap<>();
+      for (String s : ratings.keySet()) {
+        float a = ratings.get(s);
+        rs.put(s, a / nums.get(s));
+      }
+      LinkedHashMap<String, Float> results = new LinkedHashMap<>();
+      rs.entrySet().stream().sorted((k1, k2) -> {
+        if (k1.getValue() < k2.getValue()) {
+          return 1;
+        } else if (k1.getValue().equals(k2.getValue())) {
+          return k1.getKey().compareTo(k2.getKey());
+        } else {
+          return -1;
+        }
+      }).forEachOrdered((e -> results.put(e.getKey(), e.getValue())));
+      return new ArrayList<>(results.keySet()).subList(0, top_k);
+    } else {
+      Map<String, Long> gross = new HashMap<>();
+      for (int i = 0; i < star1.size(); i++) {
+        if (grosss.get(i) == 0) continue;
+         gross.put(stars1.get(i), gross.getOrDefault(stars1.get(i), 0L) + grosss.get(i));
+         nums.put(stars1.get(i), nums.getOrDefault(stars1.get(i), 0) + 1);
+         gross.put(stars2.get(i), gross.getOrDefault(stars2.get(i), 0L) + grosss.get(i));
+        nums.put(stars2.get(i), nums.getOrDefault(stars2.get(i), 0) + 1);
+        gross.put(stars3.get(i), gross.getOrDefault(stars3.get(i), 0L) + grosss.get(i));
+        nums.put(stars3.get(i), nums.getOrDefault(stars3.get(i), 0) + 1);
+        gross.put(stars4.get(i), gross.getOrDefault(stars4.get(i), 0L) + grosss.get(i));
+        nums.put(stars4.get(i), nums.getOrDefault(stars4.get(i), 0) + 1);
+      }
+      Map<String, Long> gs = new HashMap<>();
+      for (String s : gross.keySet()) {
+        long a = gross.get(s);
+        gs.put(s, a / nums.get(s));
+      }
+      LinkedHashMap<String, Long> results = new LinkedHashMap<>();
+      gs.entrySet().stream().sorted((k1, k2) -> {
+        if (k1.getValue() < k2.getValue()) {
+          return 1;
+        } else if (k1.getValue().equals(k2.getValue())) {
+          return k1.getKey().compareTo(k2.getKey());
+        } else {
+          return -1;
+        }
+      }).forEachOrdered((e -> results.put(e.getKey(), e.getValue())));
+      return new ArrayList<>(results.keySet()).subList(0, top_k);
+    }
   }
 
 
@@ -85,8 +150,7 @@ public class MovieAnalyzer {
       years.put(year, years.getOrDefault(year, 0) + 1);
     }
     LinkedHashMap<Integer, Integer> year = new LinkedHashMap<>();
-    years.entrySet().stream().sorted(Map.Entry.<Integer, Integer>comparingByKey().reversed())
-        .forEachOrdered(e -> year.put(e.getKey(), e.getValue()));
+    years.entrySet().stream().sorted(Map.Entry.<Integer, Integer>comparingByKey().reversed()).forEachOrdered(e -> year.put(e.getKey(), e.getValue()));
     return year;
   }
 
@@ -211,14 +275,13 @@ public class MovieAnalyzer {
         rating.add(Float.parseFloat(item[6]));
         overview.add(item[7].charAt(0) == '\"' ? item[7].length() - 2 : item[7].length());
         score.add(item[8].equals("") ? 0 : Integer.parseInt(item[8]));
-         director.add(item[9]);
-         star1.add(item[10]);
-         star2.add(item[11]);
-         star3.add(item[12]);
-         star4.add(item[13]);
-         vote.add(Integer.parseInt(item[14]));
-         gross.add(item[15].equals("") ? 0 : Integer.parseInt(item[15]
-             .replaceAll("\\,|\\\"", "")));
+        director.add(item[9]);
+        star1.add(item[10]);
+        star2.add(item[11]);
+        star3.add(item[12]);
+        star4.add(item[13]);
+        vote.add(Integer.parseInt(item[14]));
+        gross.add(item[15].equals("") ? 0 : Integer.parseInt(item[15].replaceAll("\\,|\\\"", "")));
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
