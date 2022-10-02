@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -220,8 +221,8 @@ public class MovieAnalyzer {
     List<String> titles = this.getTitle();
     List<String> title = new ArrayList<String>();
     for (int i = 0; i < titles.size(); i++) {
-      if (this.getGenre().get(i).contains(genre) && this.getRating().get(i) > min_rating && this.getRuntime().get(i) < max_runtime && !title.contains(titles.get(i))) {
-        if (!title.contains(titles.get(i))) title.add(titles.get(i));
+      if (this.getGenre().get(i).contains(genre) && this.getRating().get(i) >= min_rating && this.getRuntime().get(i) <= max_runtime && !title.contains(titles.get(i))) {
+        title.add(titles.get(i));
       }
     }
     title.sort(String::compareTo);
@@ -264,7 +265,7 @@ public class MovieAnalyzer {
 
   public MovieAnalyzer(String dataset_path) {
     try {
-      BufferedReader reader = new BufferedReader(new FileReader(dataset_path));
+      BufferedReader reader = new BufferedReader(new FileReader(dataset_path, StandardCharsets.UTF_8));
       reader.readLine();
       String line;
       while ((line = reader.readLine()) != null) {
