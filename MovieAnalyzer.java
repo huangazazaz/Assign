@@ -82,26 +82,45 @@ public class MovieAnalyzer {
     List<String> stars3 = this.getStar3();
     List<String> stars4 = this.getStar4();
     List<Float> rating = this.getRating();
-    List<Integer> grosss = this.getGross();
     Map<String, Integer> nums = new HashMap<>();
     if (by.equals("rating")) {
-      Map<String, Float> ratings = new HashMap<>();
+      Map<String, Double> ratings = new HashMap<>();
       for (int i = 0; i < star1.size(); i++) {
-        ratings.put(stars1.get(i), ratings.getOrDefault(stars1.get(i), 0f) + rating.get(i));
-        ratings.put(stars2.get(i), ratings.getOrDefault(stars2.get(i), 0f) + rating.get(i));
-        ratings.put(stars3.get(i), ratings.getOrDefault(stars3.get(i), 0f) + rating.get(i));
-        ratings.put(stars4.get(i), ratings.getOrDefault(stars4.get(i), 0f) + rating.get(i));
+        if (ratings.containsKey(stars1.get(i))) {
+          ratings.replace(stars1.get(i), ratings.get(stars1.get(i)) + rating.get(i));
+        } else {
+          ratings.put(stars1.get(i), Double.valueOf(rating.get(i)));
+        }
+
+        if (ratings.containsKey(stars2.get(i))) {
+          ratings.replace(stars2.get(i), ratings.get(stars2.get(i)) + rating.get(i));
+        } else {
+          ratings.put(stars2.get(i), Double.valueOf(rating.get(i)));
+        }
+
+        if (ratings.containsKey(stars3.get(i))) {
+          ratings.replace(stars3.get(i), ratings.get(stars3.get(i)) + rating.get(i));
+        } else {
+          ratings.put(stars3.get(i), Double.valueOf(rating.get(i)));
+        }
+
+        if (ratings.containsKey(stars4.get(i))) {
+          ratings.replace(stars4.get(i), ratings.get(stars4.get(i)) + rating.get(i));
+        } else {
+          ratings.put(stars4.get(i), Double.valueOf(rating.get(i)));
+        }
+
         nums.put(stars1.get(i), nums.getOrDefault(stars1.get(i), 0) + 1);
         nums.put(stars2.get(i), nums.getOrDefault(stars2.get(i), 0) + 1);
         nums.put(stars3.get(i), nums.getOrDefault(stars3.get(i), 0) + 1);
         nums.put(stars4.get(i), nums.getOrDefault(stars4.get(i), 0) + 1);
       }
-      Map<String, Float> rs = new HashMap<>();
+      Map<String, Double> rs = new HashMap<>();
       for (String s : ratings.keySet()) {
-        float a = ratings.get(s);
-        rs.put(s, a / nums.get(s));
+        double a = ratings.get(s);
+        rs.put(s, (a / nums.get(s)));
       }
-      LinkedHashMap<String, Float> results = new LinkedHashMap<>();
+      LinkedHashMap<String, Double> results = new LinkedHashMap<>();
       rs.entrySet().stream().sorted((k1, k2) -> {
         if (k1.getValue() < k2.getValue()) {
           return 1;
@@ -113,39 +132,10 @@ public class MovieAnalyzer {
       }).forEachOrdered((e -> results.put(e.getKey(), e.getValue())));
       return new ArrayList<>(results.keySet()).subList(0, top_k);
     } else {
-      Map<String, Long> gross = new HashMap<>();
-      for (int i = 0; i < star1.size(); i++) {
-        if (grosss.get(i) == 0) {
-          continue;
-        }
-        gross.put(stars1.get(i), gross.getOrDefault(stars1.get(i), 0L) + grosss.get(i));
-        nums.put(stars1.get(i), nums.getOrDefault(stars1.get(i), 0) + 1);
-        gross.put(stars2.get(i), gross.getOrDefault(stars2.get(i), 0L) + grosss.get(i));
-        nums.put(stars2.get(i), nums.getOrDefault(stars2.get(i), 0) + 1);
-        gross.put(stars3.get(i), gross.getOrDefault(stars3.get(i), 0L) + grosss.get(i));
-        nums.put(stars3.get(i), nums.getOrDefault(stars3.get(i), 0) + 1);
-        gross.put(stars4.get(i), gross.getOrDefault(stars4.get(i), 0L) + grosss.get(i));
-        nums.put(stars4.get(i), nums.getOrDefault(stars4.get(i), 0) + 1);
-      }
-      Map<String, Long> gs = new HashMap<>();
-      for (String s : gross.keySet()) {
-        long a = gross.get(s);
-        gs.put(s, a / nums.get(s));
-      }
-      LinkedHashMap<String, Long> results = new LinkedHashMap<>();
-      gs.entrySet().stream().sorted((k1, k2) -> {
-        if (k1.getValue() < k2.getValue()) {
-          return 1;
-        } else if (k1.getValue().equals(k2.getValue())) {
-          return k1.getKey().compareTo(k2.getKey());
-        } else {
-          return -1;
-        }
-      }).forEachOrdered((e -> results.put(e.getKey(), e.getValue())));
-      return new ArrayList<>(results.keySet()).subList(0, top_k);
+      Map<String, Integer> gross = new HashMap<>();
+      return null;
     }
   }
-
 
   public Map<Integer, Integer> getMovieCountByYear() {
     Map<Integer, Integer> years = new HashMap<>();
@@ -153,7 +143,8 @@ public class MovieAnalyzer {
       years.put(year, years.getOrDefault(year, 0) + 1);
     }
     LinkedHashMap<Integer, Integer> year = new LinkedHashMap<>();
-    years.entrySet().stream().sorted(Map.Entry.<Integer, Integer>comparingByKey().reversed()).forEachOrdered(e -> year.put(e.getKey(), e.getValue()));
+    years.entrySet().stream().sorted(Map.Entry.<Integer, Integer>comparingByKey().reversed())
+        .forEachOrdered(e -> year.put(e.getKey(), e.getValue()));
     return year;
   }
 
@@ -221,7 +212,8 @@ public class MovieAnalyzer {
     List<String> titles = this.getTitle();
     List<String> title = new ArrayList<String>();
     for (int i = 0; i < titles.size(); i++) {
-      if (this.getGenre().get(i).contains(genre) && this.getRating().get(i) >= min_rating && this.getRuntime().get(i) <= max_runtime && !title.contains(titles.get(i))) {
+      if (this.getGenre().get(i).contains(genre) && this.getRating().get(i) >= min_rating
+          && this.getRuntime().get(i) <= max_runtime && !title.contains(titles.get(i))) {
         title.add(titles.get(i));
       }
     }
@@ -237,12 +229,30 @@ public class MovieAnalyzer {
     List<String> stars3 = this.getStar3();
     List<String> stars4 = this.getStar4();
     for (int i = 0; i < star4.size(); i++) {
-      costar.put(stars1.get(i).compareTo(stars2.get(i)) < 0 ? stars1.get(i) + ",," + stars2.get(i) : stars2.get(i) + ",," + stars1.get(i), costar.getOrDefault(stars1.get(i).compareTo(stars2.get(i)) < 0 ? stars1.get(i) + ",," + stars2.get(i) : stars2.get(i) + ",," + stars1.get(i), 0) + 1);
-      costar.put(stars1.get(i).compareTo(stars3.get(i)) < 0 ? stars1.get(i) + ",," + stars3.get(i) : stars3.get(i) + ",," + stars1.get(i), costar.getOrDefault(stars1.get(i).compareTo(stars3.get(i)) < 0 ? stars1.get(i) + ",," + stars3.get(i) : stars3.get(i) + ",," + stars1.get(i), 0) + 1);
-      costar.put(stars1.get(i).compareTo(stars4.get(i)) < 0 ? stars1.get(i) + ",," + stars4.get(i) : stars4.get(i) + ",," + stars1.get(i), costar.getOrDefault(stars1.get(i).compareTo(stars4.get(i)) < 0 ? stars1.get(i) + ",," + stars4.get(i) : stars4.get(i) + ",," + stars1.get(i), 0) + 1);
-      costar.put(stars2.get(i).compareTo(stars3.get(i)) < 0 ? stars2.get(i) + ",," + stars3.get(i) : stars3.get(i) + ",," + stars2.get(i), costar.getOrDefault(stars2.get(i).compareTo(stars3.get(i)) < 0 ? stars2.get(i) + ",," + stars3.get(i) : stars3.get(i) + ",," + stars2.get(i), 0) + 1);
-      costar.put(stars2.get(i).compareTo(stars4.get(i)) < 0 ? stars2.get(i) + ",," + stars4.get(i) : stars4.get(i) + ",," + stars2.get(i), costar.getOrDefault(stars2.get(i).compareTo(stars4.get(i)) < 0 ? stars2.get(i) + ",," + stars4.get(i) : stars4.get(i) + ",," + stars2.get(i), 0) + 1);
-      costar.put(stars3.get(i).compareTo(stars4.get(i)) < 0 ? stars3.get(i) + ",," + stars4.get(i) : stars4.get(i) + ",," + stars3.get(i), costar.getOrDefault(stars3.get(i).compareTo(stars4.get(i)) < 0 ? stars3.get(i) + ",," + stars4.get(i) : stars4.get(i) + ",," + stars3.get(i), 0) + 1);
+      costar.put(stars1.get(i).compareTo(stars2.get(i)) < 0
+          ? stars1.get(i) + ",," + stars2.get(i) : stars2.get(i) + ",," + stars1.get(i),
+          costar.getOrDefault(stars1.get(i).compareTo(stars2.get(i)) < 0
+          ? stars1.get(i) + ",," + stars2.get(i) : stars2.get(i) + ",," + stars1.get(i), 0) + 1);
+      costar.put(stars1.get(i).compareTo(stars3.get(i)) < 0
+          ? stars1.get(i) + ",," + stars3.get(i) : stars3.get(i) + ",," + stars1.get(i),
+          costar.getOrDefault(stars1.get(i).compareTo(stars3.get(i)) < 0
+          ? stars1.get(i) + ",," + stars3.get(i) : stars3.get(i) + ",," + stars1.get(i), 0) + 1);
+      costar.put(stars1.get(i).compareTo(stars4.get(i)) < 0
+          ? stars1.get(i) + ",," + stars4.get(i) : stars4.get(i) + ",," + stars1.get(i),
+          costar.getOrDefault(stars1.get(i).compareTo(stars4.get(i)) < 0
+          ? stars1.get(i) + ",," + stars4.get(i) : stars4.get(i) + ",," + stars1.get(i), 0) + 1);
+      costar.put(stars2.get(i).compareTo(stars3.get(i)) < 0
+          ? stars2.get(i) + ",," + stars3.get(i) : stars3.get(i) + ",," + stars2.get(i),
+          costar.getOrDefault(stars2.get(i).compareTo(stars3.get(i)) < 0
+          ? stars2.get(i) + ",," + stars3.get(i) : stars3.get(i) + ",," + stars2.get(i), 0) + 1);
+      costar.put(stars2.get(i).compareTo(stars4.get(i)) < 0
+          ? stars2.get(i) + ",," + stars4.get(i) : stars4.get(i) + ",," + stars2.get(i),
+          costar.getOrDefault(stars2.get(i).compareTo(stars4.get(i)) < 0
+          ? stars2.get(i) + ",," + stars4.get(i) : stars4.get(i) + ",," + stars2.get(i), 0) + 1);
+      costar.put(stars3.get(i).compareTo(stars4.get(i)) < 0
+          ? stars3.get(i) + ",," + stars4.get(i) : stars4.get(i) + ",," + stars3.get(i),
+          costar.getOrDefault(stars3.get(i).compareTo(stars4.get(i)) < 0
+          ? stars3.get(i) + ",," + stars4.get(i) : stars4.get(i) + ",," + stars3.get(i), 0) + 1);
     }
     Map<List<String>, Integer> result = new HashMap<>();
     String[] cos;
@@ -265,7 +275,8 @@ public class MovieAnalyzer {
 
   public MovieAnalyzer(String dataset_path) {
     try {
-      BufferedReader reader = new BufferedReader(new FileReader(dataset_path, StandardCharsets.UTF_8));
+      BufferedReader reader = new BufferedReader(new FileReader(dataset_path,
+          StandardCharsets.UTF_8));
       reader.readLine();
       String line;
       while ((line = reader.readLine()) != null) {
@@ -314,7 +325,8 @@ public class MovieAnalyzer {
 
   public static List merge(int[] left, int[] right, String[] sarrl, String[] sarrr) {
     int n = left.length + right.length;
-    int i = 0, j = 0;
+    int i = 0;
+    int j = 0;
     int[] arr = new int[n];
     String[] sarr = new String[n];
     for (int k = 0; k < n; k++) {
