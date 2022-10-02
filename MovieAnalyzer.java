@@ -132,8 +132,37 @@ public class MovieAnalyzer {
       }).forEachOrdered((e -> results.put(e.getKey(), e.getValue())));
       return new ArrayList<>(results.keySet()).subList(0, top_k);
     } else {
-      Map<String, Integer> gross = new HashMap<>();
-      return null;
+      List<Integer> grosss = this.getGross();
+      Map<String, Long> gross = new HashMap<>();
+      for (int i = 0; i < star1.size(); i++) {
+        if (grosss.get(i) == 0) {
+          continue;
+        }
+        gross.put(stars1.get(i), gross.getOrDefault(stars1.get(i), 0L) + grosss.get(i));
+        nums.put(stars1.get(i), nums.getOrDefault(stars1.get(i), 0) + 1);
+        gross.put(stars2.get(i), gross.getOrDefault(stars2.get(i), 0L) + grosss.get(i));
+        nums.put(stars2.get(i), nums.getOrDefault(stars2.get(i), 0) + 1);
+        gross.put(stars3.get(i), gross.getOrDefault(stars3.get(i), 0L) + grosss.get(i));
+        nums.put(stars3.get(i), nums.getOrDefault(stars3.get(i), 0) + 1);
+        gross.put(stars4.get(i), gross.getOrDefault(stars4.get(i), 0L) + grosss.get(i));
+        nums.put(stars4.get(i), nums.getOrDefault(stars4.get(i), 0) + 1);
+      }
+      Map<String, Long> gs = new HashMap<>();
+      for (String s : gross.keySet()) {
+        long a = gross.get(s);
+        gs.put(s, a / nums.get(s));
+      }
+      LinkedHashMap<String, Long> results = new LinkedHashMap<>();
+      gs.entrySet().stream().sorted((k1, k2) -> {
+        if (k1.getValue() < k2.getValue()) {
+          return 1;
+        } else if (k1.getValue().equals(k2.getValue())) {
+          return k1.getKey().compareTo(k2.getKey());
+        } else {
+          return -1;
+        }
+      }).forEachOrdered((e -> results.put(e.getKey(), e.getValue())));
+      return new ArrayList<>(results.keySet()).subList(0, top_k);
     }
   }
 
