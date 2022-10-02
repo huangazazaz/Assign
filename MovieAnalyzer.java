@@ -114,10 +114,12 @@ public class MovieAnalyzer {
     } else {
       Map<String, Long> gross = new HashMap<>();
       for (int i = 0; i < star1.size(); i++) {
-        if (grosss.get(i) == 0) continue;
-         gross.put(stars1.get(i), gross.getOrDefault(stars1.get(i), 0L) + grosss.get(i));
-         nums.put(stars1.get(i), nums.getOrDefault(stars1.get(i), 0) + 1);
-         gross.put(stars2.get(i), gross.getOrDefault(stars2.get(i), 0L) + grosss.get(i));
+        if (grosss.get(i) == 0) {
+          continue;
+        }
+        gross.put(stars1.get(i), gross.getOrDefault(stars1.get(i), 0L) + grosss.get(i));
+        nums.put(stars1.get(i), nums.getOrDefault(stars1.get(i), 0) + 1);
+        gross.put(stars2.get(i), gross.getOrDefault(stars2.get(i), 0L) + grosss.get(i));
         nums.put(stars2.get(i), nums.getOrDefault(stars2.get(i), 0) + 1);
         gross.put(stars3.get(i), gross.getOrDefault(stars3.get(i), 0L) + grosss.get(i));
         nums.put(stars3.get(i), nums.getOrDefault(stars3.get(i), 0) + 1);
@@ -218,8 +220,8 @@ public class MovieAnalyzer {
     List<String> titles = this.getTitle();
     List<String> title = new ArrayList<String>();
     for (int i = 0; i < titles.size(); i++) {
-      if (this.getGenre().get(i).contains(genre) && this.getRating().get(i) >= min_rating && this.getRuntime().get(i) <= max_runtime && !title.contains(titles.get(i))) {
-        title.add(titles.get(i));
+      if (this.getGenre().get(i).contains(genre) && this.getRating().get(i) > min_rating && this.getRuntime().get(i) < max_runtime && !title.contains(titles.get(i))) {
+        if (!title.contains(titles.get(i))) title.add(titles.get(i));
       }
     }
     title.sort(String::compareTo);
